@@ -1,0 +1,2 @@
+0.2
+Fix method program upload: bypass COM SetValue; create all methods first; force SimTalk 2.0; verify program read-back.

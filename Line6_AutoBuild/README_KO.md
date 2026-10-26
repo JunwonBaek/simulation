@@ -31,3 +31,6 @@ https://github.com/malun22/pyplantsim
 https://github.com/tmdt-buw/python-plantsim
 https://github.com/Lang7910/PlantSimulation_mcp_skill
 https://github.com/zheng-h-4/plantsim-copilot-in-vscode (2504 도움말,2201동일성 보장 아님)
+
+## v0.2 수정
+2201에서 메서드 코드 입력 중 발생한 `Wrong number of parameters: 1 passed (string), 0 expected`를 우회하도록 COM SetValue 경로를 제거했다. 매개변수 없는 ExecuteSimTalk 호출로 객체 변수의 Program에 직접 대입하고, SimTalk 2.0을 명시한다. 모든 Method를 먼저 만든 뒤 코드를 입력하고, 입력한 원문을 다시 읽어 확인한다. 오류 로그에는 마지막 SimTalk 명령을 남긴다. 사용자 환경에서 이 수정의 실제 실행 성공은 아직 확인되지 않았다.

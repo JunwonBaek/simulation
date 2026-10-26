@@ -6,14 +6,23 @@ New-Item -ItemType Directory -Path $dest | Out-Null
 $log = Join-Path $dest 'build.log'
 $script:sim = $null
 $script:step = 0
+$script:lastCode = ''
 function Log([string]$s) { $s | Tee-Object -FilePath $log -Append | Write-Host }
-function Quote-ST([string]$s) { return '"' + $s.Replace('\','\\').Replace('"','\"') + '"' }
+function Quote-ST([string]$s) {
+    # Preserve source line breaks explicitly. SimTalk does not use C-style \n escapes.
+    $normalized = $s.Replace("`r`n", "`n").Replace("`r", "`n")
+    $literals = foreach ($line in $normalized.Split([char]10)) {
+        '"' + $line.Replace('\','\\').Replace('"','\"') + '"'
+    }
+    return ($literals -join ' + strAscii(10) + ')
+}
 function Exists([string]$path) {
     try { $name = $script:sim.GetValue($path + '.Name'); return ($null -ne $name -and [string]$name -ne '') } catch { return $false }
 }
 function ST([string]$code) {
     $script:step++
     $n = $script:step
+    $script:lastCode = $code
     $null = $script:sim.ExecuteSimTalk($code + "`n.Models.Model.BuildStep := $n")
     $seen = $script:sim.GetValue('.Models.Model.BuildStep')
     if ([int]$seen -ne $n) { throw "SimTalk setup did not complete at step $n. Code: $code" }
@@ -43,6 +52,7 @@ function Run-Case([int]$b, [bool]$on, [int]$k) {
     return $result
 }
 try {
+    Log 'Line6 AutoBuild v0.2 - no COM SetValue method upload'
     Log 'Creating Plant Simulation 2201 model. Original open models are not used.'
     $progIds = @('Tecnomatix.PlantSimulation.RemoteControl.22.1','Tecnomatix.PlantSimulation.RemoteControl.22.0')
     foreach ($id in $progIds) {
@@ -103,8 +113,24 @@ try {
         $x = 70 + ($index % 8) * 110
         $y = 650 + [math]::Floor($index/8)*90
         ST "var m: object := .InformationFlow.&Method.createObject(.Models.Model, $x, $y); m.Name := `"$name`""
-        $null = $script:sim.SetValue(('&.Models.Model.' + $name + '.Program'), [string]$method.Value)
         $index++
+    }
+    # All Method objects must exist before installing programs that reference them.
+    # Use a no-argument ExecuteSimTalk call, avoiding SetValue's generated
+    # `param _v_:any` wrapper which failed on the user's 2201 installation.
+    foreach ($method in $config.methods.PSObject.Properties) {
+        $name = $method.Name
+        Log "Installing Method: $name"
+        $program = [string]$method.Value
+        $literal = Quote-ST $program
+        ST "var targetMethod: object := &.Models.Model.$name; targetMethod.UsingNewSyntax := true; targetMethod.Program := $literal"
+        $readCode = "-> string`nvar targetMethod: object := &.Models.Model.$name`nreturn targetMethod.Program"
+        $script:lastCode = $readCode
+        $readBack = [string]$script:sim.ExecuteSimTalk($readCode)
+        $expected = $program.Replace("`r`n", "`n").Replace("`r", "`n").TrimEnd()
+        $actual = $readBack.Replace("`r`n", "`n").Replace("`r", "`n").TrimEnd()
+        if ($actual -cne $expected) { throw "Method source read-back mismatch: $name" }
+        Log "Method source verified: $name"
     }
     foreach ($control in $config.controls) {
         $obj = [string]$control[0]; $attr = [string]$control[1]; $method = [string]$control[2]
@@ -139,6 +165,7 @@ try {
     Start-Process explorer.exe -ArgumentList ('"' + $dest + '"')
 } catch {
     Log ('FAILED: ' + $_.Exception.Message)
+    Log ('Last SimTalk command: ' + $script:lastCode)
     Log 'No validated final model is claimed. Send build.log; no manual SimTalk editing is required.'
     Log "Output folder: $dest"
     exit 1

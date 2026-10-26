@@ -5,3 +5,9 @@ Static validation: PASS
 - Modeled physical capacity 16+B: PASS
 Plant Simulation 2201 compilation/runtime: NOT RUN HERE
 Windows COM registration/license and download transport: NOT VERIFIED HERE
+
+v0.2 static validation: PASS
+- PowerShell syntax rechecked
+- Failing COM SetValue method upload removed
+- Explicit SimTalk 2.0 and source read-back guards added
+- Fix not yet executed in Plant Simulation 2201
