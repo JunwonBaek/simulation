@@ -1,2 +1,2 @@
-0.3
-ASCII Method.load preflight; compile checks; EndTime and fast-run fixes; detailed failure logs.
+0.4
+Fix all absolute Method references: .Models.Model.&MethodName (not a leading ampersand before the entire path).

@@ -14,7 +14,7 @@ New-Item -ItemType Directory -Path $script:dest -Force | Out-Null
 $script:log = Join-Path $script:dest 'build.log'
 $success = $false
 try {
-    Log 'Line6 AutoBuild v0.3 - file-based method loading and preflight'
+    Log 'Line6 AutoBuild v0.4 - corrected Method references, file-based method loading and preflight'
     $script:config = Read-Config $base
     foreach ($id in @('Tecnomatix.PlantSimulation.RemoteControl.22.1','Tecnomatix.PlantSimulation.RemoteControl.22.0')) {
         try {
@@ -50,7 +50,7 @@ try {
     Add-Method 'BK_ErrorHandler' 180 70
     Load-Method 'BK_ErrorHandler' (Join-Path $base 'methods/BK_ErrorHandler.st')
     Check-Method 'BK_ErrorHandler'
-    ST 'setErrorHandler(&.Models.Model.BK_ErrorHandler)' 'Register model error logger'
+    ST 'setErrorHandler(.Models.Model.&BK_ErrorHandler)' 'Register model error logger'
     $script:handlerReady = $true
 
     foreach ($entry in $script:config.attributes.PSObject.Properties) {
@@ -100,7 +100,7 @@ o.Name := "EventController"' 'Create EventController'
     foreach ($entry in $script:config.methods.PSObject.Properties) { Check-Method $entry.Name }
     foreach ($control in $script:config.controls) {
         $obj = [string]$control[0]; $attr = [string]$control[1]; $method = [string]$control[2]
-        ST ".Models.Model.$obj.$attr := &.Models.Model.$method" "Connect control: $obj.$attr -> $method"
+        ST ".Models.Model.$obj.$attr := .Models.Model.&$method" "Connect control: $obj.$attr -> $method"
     }
     $draft = Join-Path $script:dest 'Line6_BK_UNVERIFIED.spp'
     Save-Step 'Save compiled model before validation' 'COM SaveModel'

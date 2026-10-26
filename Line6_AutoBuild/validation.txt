@@ -5,3 +5,10 @@ PASS: native-object names, control references, active B slot count and 10s/30s t
 NOT RUN: Windows PowerShell 5.1, real COM server, Plant Simulation 2201 compilation/simulation.
 The 9 deterministic native checks execute only on the user's PC. No native readiness claim is made here.
 API references are documented in README_KO.md; 2504 docs do not prove 2201 compatibility.
+
+v0.4 regression checks: PASS
+- Absolute Method references use .Models.Model.&MethodName.
+- No &.Models. reference remains in executable PowerShell.
+- Actual PowerShell tests inspect generated syntax-selection, load, and syntax-check commands.
+- Previous helper/failure-path tests still pass.
+- Plant Simulation 2201 native execution remains unverified here.

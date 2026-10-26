@@ -1,5 +1,11 @@
 # Line6 자동 생성 패키지
 
+## v0.4 메서드 경로 문법 수정
+
+절대 경로에서 참조 연산자 `&`는 경로 맨 앞이 아니라 Method 이름 바로 앞에 둬야 한다. 이전 버전의 잘못된 `&.Models.Model.BK_Probe`를 `.Models.Model.&BK_Probe`로 수정했다. 문법 설정·소스 로드·컴파일 검사·오류 처리·제어 연결의 다섯 경로를 모두 수정했다. 상대 참조 `&StartStats`는 올바르므로 유지했다.
+
+근거: SimTalk Operators and Expressions의 reference operator 항목은 "For object paths you have to insert the reference operator & directly in front of the name of the Method or the Variable"이라고 명시하며, Method 문서에도 `.Models.Model.&MyMethodWithoutParameters` 예제가 있다. 이는 문서로 확인한 코드 오류의 수정이며, 전체 2201 실행 성공을 뜻하지 않는다.
+
 ## v0.3 안정성 개편
 
 - 긴 문자열을 Program에 대입하는 경로와 COM SetValue 코드 입력을 제거했다.

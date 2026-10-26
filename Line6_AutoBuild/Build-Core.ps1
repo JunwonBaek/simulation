@@ -52,17 +52,17 @@ function Exists([string]$Path) {
 function Add-Method([string]$Name, [int]$X, [int]$Y) {
     $code = "var m: object := .InformationFlow.&Method.createObject(.Models.Model, $X, $Y)`nm.Name := " + (Quote-ST $Name)
     ST $code "Create Method $Name"
-    ST "&.Models.Model.$Name.UsingNewSyntax := true" "Select SimTalk 2.0: $Name"
+    ST ".Models.Model.&$Name.UsingNewSyntax := true" "Select SimTalk 2.0: $Name"
 }
 function Load-Method([string]$Name, [string]$File) {
     $full = [IO.Path]::GetFullPath($File)
     if (-not (Test-Path -LiteralPath $full)) { throw "Source not found: $full" }
     $literal = Quote-ST $full
-    $code = "-> boolean`nreturn &.Models.Model.$Name.load($literal)"
+    $code = "-> boolean`nreturn .Models.Model.&$Name.load($literal)"
     if (-not [bool](Eval-ST $code "Load ASCII source: $Name")) { throw "Method.load returned false: $Name" }
 }
 function Check-Method([string]$Name) {
-    $code = "-> string`nvar errorMessage: string`nif &.Models.Model.$Name.hasSyntaxError(errorMessage)`n    return errorMessage`nend`nreturn `"`""
+    $code = "-> string`nvar errorMessage: string`nif .Models.Model.&$Name.hasSyntaxError(errorMessage)`n    return errorMessage`nend`nreturn `"`""
     $problem = [string](Eval-ST $code "Compile-check Method: $Name")
     if ($problem) { throw "Method $Name has a syntax error: $problem" }
 }
