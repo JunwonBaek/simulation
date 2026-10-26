@@ -1,13 +1,7 @@
-Static validation: PASS
-- PowerShell syntax parser: PASS
-- Unique native object names and control references: PASS
-- B2..5 active buffer slots and 10s/30s times: PASS
-- Modeled physical capacity 16+B: PASS
-Plant Simulation 2201 compilation/runtime: NOT RUN HERE
-Windows COM registration/license and download transport: NOT VERIFIED HERE
-
-v0.2 static validation: PASS
-- PowerShell syntax rechecked
-- Failing COM SetValue method upload removed
-- Explicit SimTalk 2.0 and source read-back guards added
-- Fix not yet executed in Plant Simulation 2201
+v0.3 validation
+PASS: PowerShell 7.4.7 real parser on Build-Core.ps1 and Build-Line6.ps1.
+PASS: actual PowerShell helper tests with a fake COM object: ASCII sources, quote/path escaping, rejected multiline literals, failed load, syntax errors, missing step acknowledgement, runtime error propagation, diagnostic persistence.
+PASS: native-object names, control references, active B slot count and 10s/30s timing, modeled capacity 16+B.
+NOT RUN: Windows PowerShell 5.1, real COM server, Plant Simulation 2201 compilation/simulation.
+The 9 deterministic native checks execute only on the user's PC. No native readiness claim is made here.
+API references are documented in README_KO.md; 2504 docs do not prove 2201 compatibility.

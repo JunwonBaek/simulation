@@ -119,20 +119,24 @@
     "ValidationError": [
       "string",
       ""
+    ],
+    "MaxWIP": [
+      "integer",
+      0
     ]
   },
   "methods": {
-    "Initialize": "if B < 2 or B > 5 or (UseCONWIP and K < 1)\n    ValidationError := \"Invalid B or K\"\n    EventController.stop\n    return\nend\nWIP := 0\nNIn := 0\nNOut := 0\nCompleted := 0\nMeasuredAdmissions := 0\nCohortCompleted := 0\nBufferN := 0\nOutsideN := 0\nWIPArea := 0\nBufferArea := 0\nOutsideArea := 0\nResidenceSum := 0\nOutsideWaitSum := 0\nLastChange := 0\nRunFinished := false\nValidationError := \"\"\nA_MoveIn.entranceLocked := false\n&StartStats.executeIn(Warmup)\n&EndStats.executeIn(Warmup + MeasureTime)\n",
-    "Touch": "var a: time := LastChange\nvar b: time := EventController.simTime\nif a < Warmup then a := Warmup end\nif b > Warmup + MeasureTime then b := Warmup + MeasureTime end\nif b > a\n    WIPArea := WIPArea + WIP * (b-a)\n    BufferArea := BufferArea + BufferN * (b-a)\n    OutsideArea := OutsideArea + OutsideN * (b-a)\nend\nLastChange := EventController.simTime\n",
-    "OutsideArrival": "Touch\n@.createAttr(\"OutsideAt\", \"time\")\n@.OutsideAt := EventController.simTime\nOutsideN := OutsideN + 1\n",
-    "Admit": "Touch\n@.createAttr(\"EnteredAt\", \"time\")\n@.createAttr(\"InBuffer\", \"boolean\")\n@.EnteredAt := EventController.simTime\n@.InBuffer := false\nWIP := WIP + 1\nNIn := NIn + 1\nOutsideN := OutsideN - 1\nif EventController.simTime >= Warmup and EventController.simTime < Warmup + MeasureTime\n    MeasuredAdmissions := MeasuredAdmissions + 1\n    OutsideWaitSum := OutsideWaitSum + EventController.simTime - @.OutsideAt\nend\nA_MoveIn.entranceLocked := UseCONWIP and WIP >= K\nCheckWIP\n",
-    "Depart": "Touch\nWIP := WIP - 1\nNOut := NOut + 1\nvar t: time := EventController.simTime\nif t >= Warmup and t < Warmup + MeasureTime\n    Completed := Completed + 1\n    if @.EnteredAt >= Warmup\n        ResidenceSum := ResidenceSum + t - @.EnteredAt\n        CohortCompleted := CohortCompleted + 1\n    end\nend\nA_MoveIn.entranceLocked := UseCONWIP and WIP >= K\nCheckWIP\n",
-    "CheckWIP": "if WIP < 0 or WIP /= NIn - NOut or (UseCONWIP and WIP > K)\n    ValidationError := \"WIP conservation or cap violation\"\n    EventController.stop\nend\n",
-    "BufferArrival": "if not @.InBuffer\n    Touch\n    @.InBuffer := true\n    BufferN := BufferN + 1\nend\n",
-    "LowerArrival": "Touch\n@.InBuffer := false\nBufferN := BufferN - 1\n",
-    "LiftRoute": "var destination: object\nif B = 2\n    destination := Slot4\nelseif B = 3\n    destination := Slot3\nelseif B = 4\n    destination := Slot2\nelse\n    destination := Slot1\nend\n@.move(destination)\n",
-    "StartStats": "BlockStart := A_MoveOut.statBlockingTime\nWaitStart := C_665.statWaitingTime\n",
-    "EndStats": "Touch\nTH := Completed * 3600.0 / MeasureTime\nMeanWIP := WIPArea / MeasureTime\nMeanBuffer := BufferArea / MeasureTime\nMeanOutside := OutsideArea / MeasureTime\nBlockSeconds := A_MoveOut.statBlockingTime - BlockStart\nWaitSeconds := C_665.statWaitingTime - WaitStart\nCheckWIP\nRunFinished := ValidationError = \"\"\nprint \"B=\", B, \" K=\", K, \" CONWIP=\", UseCONWIP\nprint \"Throughput/hour=\", TH, \" MeanWIP=\", MeanWIP\nprint \"MeanBuffer=\", MeanBuffer, \" OutsideQueueMean=\", MeanOutside\nprint \"Entry cohort unfinished=\", MeasuredAdmissions - CohortCompleted\nEventController.stop\n"
+    "Initialize": "methods/Initialize.st",
+    "Touch": "methods/Touch.st",
+    "OutsideArrival": "methods/OutsideArrival.st",
+    "Admit": "methods/Admit.st",
+    "Depart": "methods/Depart.st",
+    "CheckWIP": "methods/CheckWIP.st",
+    "BufferArrival": "methods/BufferArrival.st",
+    "LowerArrival": "methods/LowerArrival.st",
+    "LiftRoute": "methods/LiftRoute.st",
+    "StartStats": "methods/StartStats.st",
+    "EndStats": "methods/EndStats.st"
   },
   "nodes": [
     [

@@ -1,2 +1,2 @@
-0.2
-Fix method program upload: bypass COM SetValue; create all methods first; force SimTalk 2.0; verify program read-back.
+0.3
+ASCII Method.load preflight; compile checks; EndTime and fast-run fixes; detailed failure logs.
