@@ -1,0 +1,7 @@
+Static validation: PASS
+- PowerShell syntax parser: PASS
+- Unique native object names and control references: PASS
+- B2..5 active buffer slots and 10s/30s times: PASS
+- Modeled physical capacity 16+B: PASS
+Plant Simulation 2201 compilation/runtime: NOT RUN HERE
+Windows COM registration/license and download transport: NOT VERIFIED HERE

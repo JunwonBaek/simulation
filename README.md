@@ -1,0 +1,23 @@
+# Plant Simulation 2201 — Line 6A~6C 모델 자동 생성 패키지
+
+## 다운로드와 실행
+
+1. 이 브랜치의 **Code → Download ZIP**을 선택합니다.
+2. 압축을 풀고 `Line6_AutoBuild` 폴더를 엽니다.
+3. Windows에서 **START.cmd**를 실행합니다.
+
+또는 저장소의 `Line6_AutoBuild.zip` 파일을 다운로드하여 압축을 풀어도 됩니다.
+
+Plant Simulation 2201과 유효한 라이선스가 필요합니다. 기존 열려 있는 모델은 변경하지 않고 별도 COM 인스턴스에서 새 모델을 생성합니다. 결과와 `build.log`는 바탕화면의 `Line6_BK_날짜시간` 폴더에 저장됩니다. 오류가 발생하면 코드를 직접 수정하지 말고 `build.log`를 확인하세요.
+
+## 검증 상태와 범위
+
+이 패키지는 **완성된 .spp 파일이 아니라 모델을 생성하는 자동화 스크립트**입니다. 작성 환경에서는 Plant Simulation을 실행하지 못했습니다. PowerShell 문법과 구성 데이터의 정적 검사를 통과했으며, 실제 2201 호환성과 동작은 실행 시 검증합니다.
+
+- B=2~5 중간 버퍼 위치와 K 기반 CONWIP 입구 제어
+- 논문의 station/takt 모델링을 참고한 6A~6C 결정론적 재구성
+- 실제 실행 시 정상 흐름 및 제한이 작동하지 않는 K의 비교 검사
+- 검사에 성공해야 `Line6_BK_DETERMINISTIC.spp`를 저장
+- 확률적 정지·신뢰구간·전체 민감도 분석과 논문 재현 검증은 미완료
+
+자세한 가정과 한계는 [README_KO.md](Line6_AutoBuild/README_KO.md)를 참조하세요.
